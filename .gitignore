@@ -1,0 +1,51 @@
+# Build outputs
+**/bin/
+**/obj/
+
+# NuGet packages
+**/packages/
+*.nupkg
+*.snupkg
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# JetBrains Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# Environment / secrets
+.env
+.env.*
+*.env
+appsettings.Development.json
+secrets.json
+
+# Docker volumes / local data
+**/postgres-data/
+**/rabbitmq-data/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Test results
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# Publish output
+**/publish/

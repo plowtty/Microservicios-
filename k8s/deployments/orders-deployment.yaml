@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-service
+  namespace: ecommerce
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: orders-service
+  template:
+    metadata:
+      labels:
+        app: orders-service
+    spec:
+      containers:
+        - name: orders-service
+          image: orders-service:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ConnectionStrings__OrdersDb
+              valueFrom:
+                secretKeyRef:
+                  name: orders-secrets
+                  key: db-connection-string
+            - name: RabbitMQ__Host
+              valueFrom:
+                configMapKeyRef:
+                  name: orders-config
+                  key: RabbitMQ__Host
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10

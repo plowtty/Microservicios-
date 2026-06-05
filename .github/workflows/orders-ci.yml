@@ -1,0 +1,39 @@
+name: Orders CI
+
+on:
+  push:
+    paths:
+      - 'src/Services/Orders/**'
+      - 'src/Shared/**'
+  pull_request:
+    paths:
+      - 'src/Services/Orders/**'
+      - 'src/Shared/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 8 (services)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup .NET 10 (unit tests)
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore MicroservicesSolution.sln
+
+      - name: Build
+        run: dotnet build src/Services/Orders/Orders.API/Orders.API.csproj -c Release --no-restore
+
+      - name: Unit Tests
+        run: dotnet test src/Services/Orders/Orders.UnitTests/ --no-restore -v minimal
+
+      - name: Docker Build
+        run: docker build -f src/Services/Orders/Orders.API/Dockerfile -t orders-service:${{ github.sha }} .

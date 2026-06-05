@@ -1,0 +1,7 @@
+services:
+  orders-service:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+  products-service:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
