@@ -10,381 +10,293 @@
   <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg:       #08090e;
-      --s1:       #0d1117;
-      --s2:       #161b22;
-      --s3:       #21262d;
-      --border:   #30363d;
-      --text:     #e6edf3;
-      --muted:    #7d8590;
-      --subtle:   #484f58;
-
-      --auth-1:   #a78bfa; --auth-2:   #c084fc;
-      --orders-1: #60a5fa; --orders-2: #38bdf8;
-      --prod-1:   #34d399; --prod-2:   #4ade80;
-      --pay-1:    #fbbf24; --pay-2:    #fb923c;
-
-      --accent:   #58a6ff;
-      --sidebar:  300px;
+      --bg:      #08090e;
+      --s1:      #0d1117;
+      --s2:      #161b22;
+      --s3:      #21262d;
+      --border:  #30363d;
+      --text:    #e6edf3;
+      --muted:   #7d8590;
+      --subtle:  #484f58;
+      --sidebar: 300px;
     }
-
     html, body { height: 100%; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
-
-    /* ─── SCROLLBAR ─── */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--s3); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--subtle); }
 
-    /* ─── LAYOUT ─── */
+    /* ── SHELL ── */
     .shell { display: flex; height: 100vh; overflow: hidden; }
 
-    /* ─── SIDEBAR ─── */
+    /* ════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════ */
     .sidebar {
-      width: var(--sidebar);
-      min-width: var(--sidebar);
-      background: var(--s1);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
+      width: var(--sidebar); min-width: var(--sidebar);
+      background: var(--s1); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow-y: auto;
     }
 
     /* Brand */
-    .brand-wrap {
-      padding: 20px 18px 16px;
-      border-bottom: 1px solid var(--border);
-    }
-    .brand {
-      display: flex; align-items: center; gap: 10px; margin-bottom: 2px;
-    }
+    .brand-wrap { padding: 18px 16px 14px; border-bottom: 1px solid var(--border); }
+    .brand { display: flex; align-items: center; gap: 10px; }
     .brand-logo {
       width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
-      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; box-shadow: 0 0 0 1px rgba(255,255,255,.08);
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.08);
     }
-    .brand-text { line-height: 1; }
-    .brand-name { font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -.2px; }
-    .brand-tagline { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .brand-name { font-size: 13px; font-weight: 700; letter-spacing: -.2px; }
+    .brand-sub  { font-size: 10px; color: var(--muted); margin-top: 1px; }
 
     /* JWT Panel */
-    .jwt-panel {
-      margin: 14px 14px 0;
-      background: var(--s2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .jwt-header {
-      padding: 10px 12px;
-      display: flex; align-items: center; gap: 8px;
+    .jwt-wrap { padding: 12px 14px 0; }
+    .jwt-panel { background: var(--s2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .jwt-head  {
+      padding: 9px 12px; display: flex; align-items: center; gap: 7px;
       border-bottom: 1px solid var(--border);
     }
-    .jwt-icon {
-      width: 24px; height: 24px; border-radius: 6px;
-      background: rgba(88,166,255,.12);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 13px; flex-shrink: 0;
-    }
-    .jwt-title { font-size: 12px; font-weight: 600; color: var(--text); }
-    .jwt-subtitle { font-size: 10px; color: var(--muted); margin-left: auto; }
-    .jwt-body { padding: 10px 12px; }
+    .jwt-ico { width: 22px; height: 22px; border-radius: 5px; background: rgba(88,166,255,.1); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .jwt-title { font-size: 11px; font-weight: 600; }
+    .jwt-state { font-size: 10px; margin-left: auto; transition: color .2s; color: var(--subtle); }
+    .jwt-body  { padding: 10px 12px; }
     .jwt-input {
-      width: 100%; padding: 8px 10px;
-      background: var(--bg); border: 1px solid var(--border); border-radius: 7px;
+      width: 100%; padding: 7px 10px; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 7px;
       color: var(--text); font-size: 11px; font-family: 'JetBrains Mono', monospace;
-      outline: none; transition: border-color .2s, box-shadow .2s;
-      resize: none; line-height: 1.4;
+      outline: none; resize: none; line-height: 1.4; transition: border-color .2s, box-shadow .2s;
     }
-    .jwt-input:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,.15); }
+    .jwt-input:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
     .jwt-input::placeholder { color: var(--subtle); }
-    .jwt-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .jwt-btns { display: flex; gap: 5px; margin-top: 7px; }
     .btn-apply {
-      flex: 1; padding: 7px 12px;
-      background: linear-gradient(135deg, #4f46e5, #6d28d9);
-      border: none; border-radius: 6px; color: #fff;
-      font-size: 11px; font-weight: 600; cursor: pointer;
-      transition: opacity .2s, transform .1s;
-      font-family: 'Inter', sans-serif;
+      flex: 1; padding: 6px 10px; border: none; border-radius: 6px;
+      background: linear-gradient(135deg, #4f46e5, #6d28d9); color: #fff;
+      font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: opacity .2s;
     }
-    .btn-apply:hover { opacity: .9; }
-    .btn-apply:active { transform: scale(.98); }
+    .btn-apply:hover { opacity: .85; }
     .btn-clear {
-      padding: 7px 10px; background: var(--s3); border: 1px solid var(--border);
-      border-radius: 6px; color: var(--muted); font-size: 11px; cursor: pointer;
-      transition: color .2s, background .2s; font-family: 'Inter', sans-serif;
-    }
-    .btn-clear:hover { color: var(--text); background: var(--border); }
-
-    /* Services nav */
-    .nav-wrap { padding: 16px 14px 8px; flex: 1; }
-    .nav-label {
-      font-size: 10px; font-weight: 700; color: var(--subtle);
-      text-transform: uppercase; letter-spacing: 1px;
-      padding: 0 4px; margin-bottom: 6px;
-    }
-
-    .svc-btn {
-      width: 100%; display: flex; align-items: center; gap: 10px;
-      padding: 9px 10px; border-radius: 8px; border: none;
-      background: none; color: var(--text); cursor: pointer;
-      text-align: left; transition: background .15s; margin-bottom: 1px;
-      position: relative;
-    }
-    .svc-btn:hover { background: rgba(255,255,255,.04); }
-    .svc-btn.active { background: rgba(255,255,255,.06); }
-    .svc-btn.active::before {
-      content: '';
-      position: absolute; left: 0; top: 6px; bottom: 6px;
-      width: 3px; border-radius: 0 3px 3px 0;
-      background: var(--svc-color);
-    }
-
-    .svc-icon {
-      width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px;
-      background: var(--svc-bg);
-      border: 1px solid var(--svc-border);
-    }
-    .svc-text { flex: 1; min-width: 0; }
-    .svc-name { font-size: 12px; font-weight: 600; line-height: 1.2; }
-    .svc-hint { font-size: 10px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .svc-pill {
-      font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px;
-      text-transform: uppercase; letter-spacing: .4px; flex-shrink: 0;
-    }
-    .svc-pill.ok      { background: rgba(52,211,153,.12); color: #34d399; }
-    .svc-pill.down    { background: rgba(248,113,113,.12); color: #f87171; }
-    .svc-pill.loading { background: rgba(125,133,144,.1);  color: var(--subtle); }
-
-    /* Sidebar footer */
-    .sidebar-footer {
-      padding: 12px 18px 16px;
-      border-top: 1px solid var(--border);
-      margin-top: auto;
-    }
-    .stack-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
-    .chip {
-      font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 20px;
-      background: var(--s3); color: var(--muted);
-      border: 1px solid var(--border); letter-spacing: .3px;
-    }
-    .gh-link {
-      display: flex; align-items: center; gap: 6px;
-      color: var(--muted); text-decoration: none; font-size: 11px;
+      padding: 6px 10px; border: 1px solid var(--border); border-radius: 6px;
+      background: var(--s3); color: var(--muted); font-size: 11px; cursor: pointer; font-family: inherit;
       transition: color .2s;
     }
-    .gh-link:hover { color: var(--text); }
-    .gh-link svg { opacity: .6; }
+    .btn-clear:hover { color: var(--text); }
 
-    /* ─── MAIN ─── */
+    /* Nav */
+    .nav-wrap { padding: 14px 14px 8px; flex: 1; }
+    .nav-label { font-size: 9px; font-weight: 700; color: var(--subtle); text-transform: uppercase; letter-spacing: 1.2px; padding: 0 4px; margin-bottom: 5px; }
+    .svc-btn {
+      width: 100%; display: flex; align-items: center; gap: 9px; padding: 8px 10px;
+      border-radius: 8px; border: none; background: none; color: var(--text);
+      cursor: pointer; text-align: left; margin-bottom: 1px; position: relative;
+      transition: background .15s;
+    }
+    .svc-btn:hover  { background: rgba(255,255,255,.04); }
+    .svc-btn.active { background: rgba(255,255,255,.06); }
+    .svc-btn.active::before {
+      content: ''; position: absolute; left: 0; top: 7px; bottom: 7px;
+      width: 3px; border-radius: 0 2px 2px 0; background: var(--c);
+    }
+    .svc-ico {
+      width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+      background: var(--bg-c); border: 1px solid var(--bd-c);
+    }
+    .svc-txt { flex: 1; min-width: 0; }
+    .svc-nm  { font-size: 12px; font-weight: 600; line-height: 1.2; }
+    .svc-ht  { font-size: 10px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .svc-pill { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 20px; text-transform: uppercase; letter-spacing: .3px; flex-shrink: 0; }
+    .svc-pill.ok      { background: rgba(52,211,153,.12); color: #34d399; }
+    .svc-pill.down    { background: rgba(248,113,113,.12); color: #f87171; }
+    .svc-pill.loading { background: rgba(72,79,88,.15);   color: var(--subtle); }
+
+    /* Footer */
+    .sb-foot { padding: 10px 16px 14px; border-top: 1px solid var(--border); margin-top: auto; }
+    .chips   { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+    .chip    { font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; background: var(--s3); color: var(--subtle); border: 1px solid var(--border); }
+    .gh-link { display: flex; align-items: center; gap: 6px; color: var(--muted); text-decoration: none; font-size: 11px; transition: color .2s; }
+    .gh-link:hover { color: var(--text); }
+
+    /* ════════════════════════════════
+       MAIN
+    ════════════════════════════════ */
     .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
 
-    /* Top service bar */
-    .service-bar {
-      padding: 0 24px;
-      background: var(--s1);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 14px;
-      flex-shrink: 0; height: 56px;
+    /* Top bar */
+    .topbar {
+      height: 50px; flex-shrink: 0; padding: 0 20px;
+      background: var(--s1); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
     }
-    .bar-icon {
-      width: 36px; height: 36px; border-radius: 9px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 17px;
+    .btn-home {
+      display: flex; align-items: center; gap: 5px; padding: 5px 10px;
+      border-radius: 6px; border: 1px solid var(--border); background: var(--s2);
+      color: var(--muted); font-size: 11px; font-weight: 500; cursor: pointer; font-family: inherit;
+      transition: color .15s, border-color .15s; text-decoration: none;
     }
-    .bar-name { font-size: 15px; font-weight: 700; }
-    .bar-desc { font-size: 12px; color: var(--muted); }
-    .bar-sep  { width: 1px; height: 20px; background: var(--border); }
-    .bar-path {
-      font-family: 'JetBrains Mono', monospace; font-size: 11px;
-      color: var(--muted); background: var(--s2);
-      border: 1px solid var(--border); padding: 3px 9px; border-radius: 5px;
-    }
-    .bar-spacer { flex: 1; }
-    .bar-badge {
-      font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
-      letter-spacing: .4px; text-transform: uppercase;
-    }
+    .btn-home:hover { color: var(--text); border-color: var(--subtle); }
+    .tb-sep  { width: 1px; height: 18px; background: var(--border); }
+    .tb-ico  { width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+    .tb-name { font-size: 13px; font-weight: 700; }
+    .tb-desc { font-size: 11px; color: var(--muted); }
+    .tb-path { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--muted); background: var(--s2); border: 1px solid var(--border); padding: 2px 8px; border-radius: 5px; }
+    .tb-space{ flex: 1; }
+    .tb-badge{ font-size: 9px; font-weight: 700; padding: 3px 9px; border-radius: 20px; text-transform: uppercase; letter-spacing: .4px; }
 
-    /* Content area */
-    .content { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+    /* Scrollable area */
+    .scroll { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
 
-    /* Loading */
-    .loading-state {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 16px;
-    }
-    .spinner {
-      width: 36px; height: 36px; border-radius: 50%;
-      border: 3px solid var(--s3);
-      border-top-color: #4f46e5;
-      animation: spin .7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-text { font-size: 13px; color: var(--muted); }
-
-    /* Swagger container */
-    .swagger-wrap { flex: 1; background: #fff; }
-    .swagger-wrap.hidden { display: none; }
-
-    /* ─── WELCOME ─── */
-    .welcome {
-      flex: 1; overflow-y: auto;
-      background: var(--bg);
-    }
+    /* ════════════════════════════════
+       WELCOME
+    ════════════════════════════════ */
+    .welcome { background: var(--bg); }
     .hero {
-      background: linear-gradient(160deg, #0d1117 0%, #0d1117 50%, #0f0c1a 100%);
-      padding: 52px 48px 40px;
+      padding: 48px 44px 36px; position: relative; overflow: hidden;
+      background: radial-gradient(ellipse 80% 60% at 60% -10%, rgba(79,70,229,.12) 0%, transparent 70%), var(--s1);
       border-bottom: 1px solid var(--border);
-      position: relative; overflow: hidden;
     }
-    .hero::before {
-      content: '';
-      position: absolute; top: -60px; right: -60px;
-      width: 300px; height: 300px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(79,70,229,.15) 0%, transparent 70%);
-      pointer-events: none;
+    .hero-eye {
+      display: inline-flex; align-items: center; gap: 6px; margin-bottom: 16px;
+      font-size: 10px; font-weight: 700; color: #818cf8; letter-spacing: .5px; text-transform: uppercase;
+      background: rgba(99,102,241,.1); border: 1px solid rgba(99,102,241,.2); padding: 4px 10px; border-radius: 20px;
     }
-    .hero-eyebrow {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 11px; font-weight: 600; color: #818cf8;
-      background: rgba(99,102,241,.1); border: 1px solid rgba(99,102,241,.2);
-      padding: 4px 10px; border-radius: 20px; margin-bottom: 18px;
-      letter-spacing: .3px;
-    }
-    .hero-dot { width: 6px; height: 6px; border-radius: 50%; background: #818cf8; }
+    .hero-dot { width: 5px; height: 5px; border-radius: 50%; background: #818cf8; }
     .hero h1 {
-      font-size: 28px; font-weight: 800; letter-spacing: -.5px; line-height: 1.2;
-      margin-bottom: 10px;
-      background: linear-gradient(135deg, #e6edf3 30%, #8b949e);
+      font-size: 30px; font-weight: 800; letter-spacing: -.6px; line-height: 1.15; margin-bottom: 10px;
+      background: linear-gradient(135deg, #e6edf3 40%, #7d8590);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .hero p { font-size: 14px; color: var(--muted); line-height: 1.7; max-width: 540px; margin-bottom: 24px; }
-    .tech-stack { display: flex; flex-wrap: wrap; gap: 6px; }
-    .tech-badge {
-      font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 6px;
-      background: var(--s2); border: 1px solid var(--border); color: var(--muted);
-      font-family: 'JetBrains Mono', monospace;
-    }
+    .hero p { font-size: 13px; color: var(--muted); line-height: 1.75; max-width: 520px; margin-bottom: 22px; }
+    .tech-row { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tech-badge { font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 6px; background: var(--s2); border: 1px solid var(--border); color: var(--muted); font-family: 'JetBrains Mono', monospace; }
 
     /* Steps */
-    .steps-section { padding: 36px 48px; }
-    .section-title {
-      font-size: 12px; font-weight: 700; color: var(--subtle);
-      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px;
-    }
-    .steps { display: flex; flex-direction: column; gap: 0; }
-    .step {
-      display: flex; gap: 16px; padding: 0 0 28px;
-      position: relative;
-    }
-    .step:not(:last-child)::after {
-      content: ''; position: absolute;
-      left: 15px; top: 32px; bottom: 0; width: 1px;
-      background: var(--border);
-    }
-    .step-num {
-      width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    .steps-section { padding: 32px 44px; border-bottom: 1px solid var(--border); }
+    .sec-title { font-size: 10px; font-weight: 700; color: var(--subtle); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 20px; }
+    .steps { display: flex; flex-direction: column; }
+    .step { display: flex; gap: 14px; padding-bottom: 26px; position: relative; }
+    .step:not(:last-child)::after { content: ''; position: absolute; left: 14px; top: 30px; bottom: 0; width: 1px; background: var(--border); }
+    .step-n {
+      width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; z-index: 1;
       background: var(--s2); border: 1px solid var(--border);
       display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700; color: var(--accent);
-      position: relative; z-index: 1;
+      font-size: 11px; font-weight: 700; color: #58a6ff;
     }
-    .step-body {}
-    .step-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; margin-top: 5px; }
-    .step-desc  { font-size: 12px; color: var(--muted); line-height: 1.6; }
-    .step-code  {
-      margin-top: 8px; padding: 8px 12px; border-radius: 7px;
-      background: var(--s2); border: 1px solid var(--border);
-      font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #79c0ff;
-    }
+    .step-b {}
+    .step-title { font-size: 13px; font-weight: 600; margin: 5px 0 4px; }
+    .step-desc  { font-size: 12px; color: var(--muted); line-height: 1.65; }
+    .step-code  { margin-top: 8px; padding: 8px 12px; border-radius: 7px; background: var(--s2); border: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #79c0ff; line-height: 1.6; }
 
     /* Service cards */
-    .cards-section { padding: 0 48px 48px; }
-    .cards-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-    }
+    .cards-section { padding: 32px 44px 48px; }
+    .cards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .svc-card {
       background: var(--s1); border: 1px solid var(--border); border-radius: 12px;
-      padding: 18px 20px; cursor: pointer;
+      padding: 18px 20px; cursor: pointer; position: relative; overflow: hidden;
       transition: border-color .2s, transform .15s, box-shadow .2s;
-      position: relative; overflow: hidden;
     }
-    .svc-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: var(--svc-gradient); opacity: 0; transition: opacity .2s;
-    }
-    .svc-card:hover { border-color: var(--svc-color); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
-    .svc-card:hover::before { opacity: 1; }
-    .card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-    .card-icon {
-      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-size: 18px;
-      background: var(--svc-bg); border: 1px solid var(--svc-border);
-    }
-    .card-meta {}
-    .card-name { font-size: 14px; font-weight: 700; }
-    .card-port { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
-    .card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
-    .card-endpoints { display: flex; flex-wrap: wrap; gap: 4px; }
-    .ep-chip {
-      font-size: 10px; padding: 2px 7px; border-radius: 4px;
-      font-family: 'JetBrains Mono', monospace;
-      background: var(--s2); color: var(--muted); border: 1px solid var(--border);
-    }
+    .svc-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--grad); opacity: 0; transition: opacity .2s; }
+    .svc-card:hover  { border-color: var(--c); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(0,0,0,.35); }
+    .svc-card:hover::after { opacity: 1; }
+    .card-hd { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .card-ico { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; background: var(--bg-c); border: 1px solid var(--bd-c); flex-shrink: 0; }
+    .card-nm  { font-size: 14px; font-weight: 700; }
+    .card-pt  { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+    .card-desc{ font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+    .ep-row   { display: flex; flex-wrap: wrap; gap: 4px; }
+    .ep       { font-size: 10px; padding: 2px 7px; border-radius: 4px; background: var(--s2); color: var(--muted); border: 1px solid var(--border); font-family: 'JetBrains Mono', monospace; }
 
-    /* ─── SWAGGER OVERRIDES ─── */
-    .swagger-wrap .swagger-ui .topbar { display: none !important; }
-    .swagger-wrap .swagger-ui { font-family: 'Inter', system-ui, sans-serif !important; }
-
-    /* ─── TOAST ─── */
-    .toast {
-      position: fixed; bottom: 20px; right: 20px;
-      padding: 10px 16px; border-radius: 8px;
-      font-size: 12px; font-weight: 600; color: #fff;
-      box-shadow: 0 4px 20px rgba(0,0,0,.4); z-index: 9999;
-      animation: slideIn .25s ease; pointer-events: none;
+    /* ════════════════════════════════
+       SERVICE OVERVIEW + SWAGGER
+    ════════════════════════════════ */
+    .svc-overview {
+      padding: 24px 28px; border-bottom: 1px solid var(--border);
+      background: var(--s1);
     }
-    @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .ov-row  { display: flex; align-items: flex-start; gap: 20px; }
+    .ov-icon { width: 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+    .ov-head { flex: 1; }
+    .ov-name { font-size: 18px; font-weight: 800; letter-spacing: -.3px; margin-bottom: 4px; }
+    .ov-desc { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 12px; }
+    .ov-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .ov-tag  { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 6px; background: var(--s2); border: 1px solid var(--border); color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .ov-tag.highlight { background: var(--bg-c); border-color: var(--bd-c); color: var(--c); }
 
-    /* ─── UTILITIES ─── */
+    .ov-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 18px; }
+    .ov-stat { background: var(--s2); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+    .ov-stat-val { font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 2px; }
+    .ov-stat-lbl { font-size: 10px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .5px; }
+
+    .ov-endpoints { margin-top: 18px; }
+    .ov-ep-title  { font-size: 10px; font-weight: 700; color: var(--subtle); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .ep-list { display: flex; flex-direction: column; gap: 6px; }
+    .ep-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--s2); border: 1px solid var(--border); border-radius: 7px; }
+    .ep-method { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; letter-spacing: .5px; min-width: 38px; text-align: center; flex-shrink: 0; }
+    .method-get    { background: rgba(52,211,153,.15); color: #34d399; }
+    .method-post   { background: rgba(96,165,250,.15);  color: #60a5fa; }
+    .method-delete { background: rgba(248,113,113,.15); color: #f87171; }
+    .method-patch  { background: rgba(251,191,36,.15);  color: #fbbf24; }
+    .ep-path  { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text); flex: 1; }
+    .ep-note  { font-size: 10px; color: var(--muted); }
+    .ep-auth  { font-size: 9px; font-weight: 600; padding: 1px 6px; border-radius: 4px; background: rgba(167,139,250,.12); color: #a78bfa; border: 1px solid rgba(167,139,250,.2); flex-shrink: 0; }
+
+    .explore-btn {
+      margin-top: 18px; display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; font-family: inherit;
+      font-size: 12px; font-weight: 700; color: #fff;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      transition: opacity .2s, transform .1s;
+    }
+    .explore-btn:hover { opacity: .88; }
+    .explore-btn:active { transform: scale(.98); }
+
+    .swagger-section { background: #fff; }
+
+    /* Loading */
+    .loading-wrap { padding: 60px; display: flex; flex-direction: column; align-items: center; gap: 14px; background: var(--bg); }
+    .spinner { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--s3); border-top-color: #4f46e5; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin-txt { font-size: 12px; color: var(--muted); }
+
+    /* ── SWAGGER UI overrides ── */
+    .swagger-section .swagger-ui .topbar { display: none !important; }
+    .swagger-section .swagger-ui { font-family: 'Inter', system-ui, sans-serif !important; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 18px; right: 18px; padding: 10px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; color: #fff; box-shadow: 0 4px 20px rgba(0,0,0,.5); z-index: 9999; animation: toastIn .2s ease; pointer-events: none; }
+    @keyframes toastIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
 <div class="shell">
 
-  <!-- ═══════════ SIDEBAR ═══════════ -->
+  <!-- ═══════ SIDEBAR ═══════ -->
   <aside class="sidebar">
 
-    <!-- Brand -->
     <div class="brand-wrap">
       <div class="brand">
         <div class="brand-logo">⚡</div>
-        <div class="brand-text">
+        <div>
           <div class="brand-name">MicroservicesSolution</div>
-          <div class="brand-tagline">API Portal · .NET 8</div>
+          <div class="brand-sub">API Portal · .NET 8</div>
         </div>
       </div>
     </div>
 
-    <!-- JWT -->
-    <div style="padding: 14px 14px 0">
+    <div class="jwt-wrap" style="margin-top:12px">
       <div class="jwt-panel">
-        <div class="jwt-header">
-          <div class="jwt-icon">🔑</div>
+        <div class="jwt-head">
+          <div class="jwt-ico">🔑</div>
           <span class="jwt-title">JWT Bearer Token</span>
-          <span class="jwt-subtitle" id="jwt-status">not set</span>
+          <span class="jwt-state" id="jwt-state">not set</span>
         </div>
         <div class="jwt-body">
-          <textarea id="jwt-input" class="jwt-input" rows="3"
-            placeholder="Paste accessToken here after logging in..."></textarea>
-          <div class="jwt-actions">
+          <textarea id="jwt-input" class="jwt-input" rows="3" placeholder="Paste accessToken here after logging in…"></textarea>
+          <div class="jwt-btns">
             <button class="btn-apply" onclick="applyToken()">⚡ Apply to all</button>
             <button class="btn-clear" onclick="clearToken()">Clear</button>
           </div>
@@ -392,218 +304,191 @@
       </div>
     </div>
 
-    <!-- Services -->
     <nav class="nav-wrap">
-      <div class="nav-label">Microservices</div>
+      <div class="nav-label">Services</div>
 
       <button class="svc-btn" id="btn-auth" onclick="loadService('auth')"
-        style="--svc-color:#a78bfa; --svc-bg:rgba(167,139,250,.1); --svc-border:rgba(167,139,250,.2)">
-        <span class="svc-icon" style="--svc-bg:rgba(167,139,250,.1); --svc-border:rgba(167,139,250,.2)">🔐</span>
-        <span class="svc-text">
-          <div class="svc-name">Auth Service</div>
-          <div class="svc-hint">Register · Login · Refresh · Revoke</div>
-        </span>
+        style="--c:#a78bfa; --bg-c:rgba(167,139,250,.1); --bd-c:rgba(167,139,250,.2)">
+        <span class="svc-ico" style="--bg-c:rgba(167,139,250,.1); --bd-c:rgba(167,139,250,.2)">🔐</span>
+        <span class="svc-txt"><div class="svc-nm">Auth Service</div><div class="svc-ht">Register · Login · Refresh · Revoke</div></span>
         <span class="svc-pill loading" id="status-auth">—</span>
       </button>
 
       <button class="svc-btn" id="btn-orders" onclick="loadService('orders')"
-        style="--svc-color:#60a5fa; --svc-bg:rgba(96,165,250,.1); --svc-border:rgba(96,165,250,.2)">
-        <span class="svc-icon" style="--svc-bg:rgba(96,165,250,.1); --svc-border:rgba(96,165,250,.2)">📋</span>
-        <span class="svc-text">
-          <div class="svc-name">Orders Service</div>
-          <div class="svc-hint">Create · Cancel · Track orders</div>
-        </span>
+        style="--c:#60a5fa; --bg-c:rgba(96,165,250,.1); --bd-c:rgba(96,165,250,.2)">
+        <span class="svc-ico" style="--bg-c:rgba(96,165,250,.1); --bd-c:rgba(96,165,250,.2)">📋</span>
+        <span class="svc-txt"><div class="svc-nm">Orders Service</div><div class="svc-ht">Create · Cancel · Track orders</div></span>
         <span class="svc-pill loading" id="status-orders">—</span>
       </button>
 
       <button class="svc-btn" id="btn-products" onclick="loadService('products')"
-        style="--svc-color:#34d399; --svc-bg:rgba(52,211,153,.1); --svc-border:rgba(52,211,153,.2)">
-        <span class="svc-icon" style="--svc-bg:rgba(52,211,153,.1); --svc-border:rgba(52,211,153,.2)">📦</span>
-        <span class="svc-text">
-          <div class="svc-name">Products Service</div>
-          <div class="svc-hint">Catalog · Stock · gRPC</div>
-        </span>
+        style="--c:#34d399; --bg-c:rgba(52,211,153,.1); --bd-c:rgba(52,211,153,.2)">
+        <span class="svc-ico" style="--bg-c:rgba(52,211,153,.1); --bd-c:rgba(52,211,153,.2)">📦</span>
+        <span class="svc-txt"><div class="svc-nm">Products Service</div><div class="svc-ht">Catalog · Stock · gRPC</div></span>
         <span class="svc-pill loading" id="status-products">—</span>
       </button>
 
       <button class="svc-btn" id="btn-payments" onclick="loadService('payments')"
-        style="--svc-color:#fbbf24; --svc-bg:rgba(251,191,36,.1); --svc-border:rgba(251,191,36,.2)">
-        <span class="svc-icon" style="--svc-bg:rgba(251,191,36,.1); --svc-border:rgba(251,191,36,.2)">💳</span>
-        <span class="svc-text">
-          <div class="svc-name">Payments Service</div>
-          <div class="svc-hint">Process · Query payment status</div>
-        </span>
+        style="--c:#fbbf24; --bg-c:rgba(251,191,36,.1); --bd-c:rgba(251,191,36,.2)">
+        <span class="svc-ico" style="--bg-c:rgba(251,191,36,.1); --bd-c:rgba(251,191,36,.2)">💳</span>
+        <span class="svc-txt"><div class="svc-nm">Payments Service</div><div class="svc-ht">Process · Query payment status</div></span>
         <span class="svc-pill loading" id="status-payments">—</span>
       </button>
     </nav>
 
-    <!-- Footer -->
-    <div class="sidebar-footer">
-      <div class="stack-chips">
-        <span class="chip">.NET 8</span>
-        <span class="chip">CQRS</span>
-        <span class="chip">JWT RS256</span>
-        <span class="chip">RabbitMQ</span>
-        <span class="chip">gRPC</span>
-        <span class="chip">EF Core</span>
-        <span class="chip">Docker</span>
-        <span class="chip">PostgreSQL</span>
+    <div class="sb-foot">
+      <div class="chips">
+        <span class="chip">.NET 8</span><span class="chip">Clean Arch</span>
+        <span class="chip">CQRS</span><span class="chip">JWT RS256</span>
+        <span class="chip">RabbitMQ</span><span class="chip">gRPC</span>
+        <span class="chip">EF Core</span><span class="chip">Docker</span>
       </div>
       <a class="gh-link" href="https://github.com/plowtty/Microservicios-" target="_blank">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/>
-        </svg>
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
         View on GitHub
       </a>
     </div>
   </aside>
 
-  <!-- ═══════════ MAIN ═══════════ -->
+  <!-- ═══════ MAIN ═══════ -->
   <main class="main">
 
-    <!-- Service bar (hidden on welcome) -->
-    <div class="service-bar hidden" id="service-bar">
-      <div class="bar-icon" id="bar-icon"></div>
-      <div>
-        <div class="bar-name" id="bar-name"></div>
-        <div class="bar-desc" id="bar-desc"></div>
+    <!-- Top bar (always visible) -->
+    <div class="topbar" id="topbar">
+      <!-- home state -->
+      <div id="tb-home-state" style="display:flex;align-items:center;gap:8px;width:100%">
+        <span style="font-size:14px">⚡</span>
+        <span style="font-size:13px;font-weight:700">API Portal</span>
+        <span class="tb-sep"></span>
+        <span style="font-size:11px;color:var(--muted)">Select a service from the sidebar to get started</span>
       </div>
-      <div class="bar-sep"></div>
-      <span class="bar-path" id="bar-path"></span>
-      <div class="bar-spacer"></div>
-      <span class="bar-badge" id="bar-badge">OpenAPI 3.0</span>
+      <!-- service state -->
+      <div id="tb-svc-state" class="hidden" style="display:flex;align-items:center;gap:10px;width:100%">
+        <button class="btn-home" onclick="goHome()">← Home</button>
+        <div class="tb-sep"></div>
+        <div class="tb-ico" id="tb-ico"></div>
+        <div>
+          <div class="tb-name" id="tb-name"></div>
+          <div class="tb-desc" id="tb-desc"></div>
+        </div>
+        <div class="tb-sep"></div>
+        <span class="tb-path" id="tb-path"></span>
+        <div class="tb-space"></div>
+        <span class="tb-badge" id="tb-badge">OpenAPI 3.0</span>
+      </div>
     </div>
 
     <!-- Scrollable content -->
-    <div class="content">
+    <div class="scroll" id="scroll">
 
-      <!-- WELCOME -->
+      <!-- ── WELCOME ── -->
       <div id="welcome" class="welcome">
         <div class="hero">
-          <div class="hero-eyebrow"><span class="hero-dot"></span> E-Commerce Platform</div>
+          <div class="hero-eye"><span class="hero-dot"></span>E-Commerce Platform</div>
           <h1>Microservices API Portal</h1>
-          <p>Explore and test 4 independent microservices built with Clean Architecture, CQRS, JWT RS256 authentication, RabbitMQ messaging, and gRPC communication.</p>
-          <div class="tech-stack">
+          <p>4 independent microservices built with Clean Architecture, CQRS, JWT RS256 authentication, RabbitMQ messaging, and gRPC. Each service owns its own PostgreSQL database.</p>
+          <div class="tech-row">
             <span class="tech-badge">.NET 8</span>
             <span class="tech-badge">Clean Architecture</span>
             <span class="tech-badge">CQRS + MediatR</span>
             <span class="tech-badge">JWT RS256</span>
             <span class="tech-badge">BCrypt 12</span>
-            <span class="tech-badge">RabbitMQ</span>
-            <span class="tech-badge">gRPC</span>
-            <span class="tech-badge">PostgreSQL</span>
+            <span class="tech-badge">RabbitMQ + MassTransit</span>
+            <span class="tech-badge">gRPC + Protobuf</span>
+            <span class="tech-badge">PostgreSQL × 4</span>
             <span class="tech-badge">EF Core 8</span>
             <span class="tech-badge">YARP Gateway</span>
+            <span class="tech-badge">xUnit + Moq · 59 tests</span>
           </div>
         </div>
 
         <div class="steps-section">
-          <div class="section-title">How to use this portal</div>
+          <div class="sec-title">How to use this portal</div>
           <div class="steps">
             <div class="step">
-              <div class="step-num">1</div>
-              <div class="step-body">
+              <div class="step-n">1</div>
+              <div class="step-b">
                 <div class="step-title">Register or log in via Auth Service</div>
-                <div class="step-desc">Open Auth Service → <code style="font-family:monospace;color:#79c0ff">POST /api/auth/register</code> to create a new account, or <code style="font-family:monospace;color:#79c0ff">POST /api/auth/login</code> if you already have one.</div>
+                <div class="step-desc">Open <strong>Auth Service</strong> in the sidebar. Use <code style="font-family:monospace;color:#79c0ff;font-size:11px">POST /api/auth/register</code> to create an account or <code style="font-family:monospace;color:#79c0ff;font-size:11px">POST /api/auth/login</code> if you already have one.</div>
                 <div class="step-code">{ "email": "you@example.com", "password": "Password1!", "firstName": "John", "lastName": "Doe" }</div>
               </div>
             </div>
             <div class="step">
-              <div class="step-num">2</div>
-              <div class="step-body">
+              <div class="step-n">2</div>
+              <div class="step-b">
                 <div class="step-title">Copy your Access Token</div>
-                <div class="step-desc">The response will contain an <code style="font-family:monospace;color:#79c0ff">accessToken</code>. Copy it from the response body — it's a signed RS256 JWT valid for 15 minutes.</div>
+                <div class="step-desc">The response returns an <code style="font-family:monospace;color:#79c0ff;font-size:11px">accessToken</code> — a signed RS256 JWT valid for 15 minutes — and a <code style="font-family:monospace;color:#79c0ff;font-size:11px">refreshToken</code> for rotation.</div>
               </div>
             </div>
             <div class="step">
-              <div class="step-num">3</div>
-              <div class="step-body">
-                <div class="step-title">Paste the token in the sidebar and click Apply</div>
-                <div class="step-desc">Paste the token in the JWT panel on the left. Click <strong>⚡ Apply to all</strong> — it will be injected as a Bearer header automatically on every request across all services.</div>
+              <div class="step-n">3</div>
+              <div class="step-b">
+                <div class="step-title">Paste the token and click ⚡ Apply to all</div>
+                <div class="step-desc">Paste the <code style="font-family:monospace;color:#79c0ff;font-size:11px">accessToken</code> into the JWT panel in the sidebar. Click <strong>⚡ Apply to all</strong> — it's injected as <code style="font-family:monospace;color:#79c0ff;font-size:11px">Authorization: Bearer …</code> on every request across all services.</div>
               </div>
             </div>
             <div class="step">
-              <div class="step-num">4</div>
-              <div class="step-body">
-                <div class="step-title">Explore the APIs below</div>
-                <div class="step-desc">Browse the Products catalog freely (public). Place orders, track payments — all protected endpoints now authenticate with your token automatically.</div>
+              <div class="step-n">4</div>
+              <div class="step-b">
+                <div class="step-title">Explore the APIs</div>
+                <div class="step-desc">Products catalog is <strong>public</strong> — no token needed. Orders and Payments require a valid JWT. Admin-only endpoints (create/delete products) require the <code style="font-family:monospace;color:#79c0ff;font-size:11px">Admin</code> role.</div>
               </div>
             </div>
           </div>
         </div>
 
         <div class="cards-section">
-          <div class="section-title">Services</div>
+          <div class="sec-title">Services</div>
           <div class="cards-grid">
 
             <div class="svc-card" onclick="loadService('auth')"
-              style="--svc-color:#a78bfa; --svc-bg:rgba(167,139,250,.1); --svc-border:rgba(167,139,250,.2); --svc-gradient:linear-gradient(90deg,#a78bfa,#c084fc)">
-              <div class="card-head">
-                <div class="card-icon" style="--svc-bg:rgba(167,139,250,.1); --svc-border:rgba(167,139,250,.2)">🔐</div>
-                <div class="card-meta">
-                  <div class="card-name">Auth Service</div>
-                  <div class="card-port">:5004 · JWT RS256 · BCrypt 12</div>
-                </div>
+              style="--c:#a78bfa; --bg-c:rgba(167,139,250,.1); --bd-c:rgba(167,139,250,.2); --grad:linear-gradient(90deg,#a78bfa,#c084fc)">
+              <div class="card-hd">
+                <div class="card-ico" style="--bg-c:rgba(167,139,250,.1); --bd-c:rgba(167,139,250,.2)">🔐</div>
+                <div><div class="card-nm">Auth Service</div><div class="card-pt">:5004 · RS256 · BCrypt 12 · Rate Limited</div></div>
               </div>
-              <div class="card-desc">Identity & access management with refresh token rotation, RS256 asymmetric signing, and rate limiting.</div>
-              <div class="card-endpoints">
-                <span class="ep-chip">POST /register</span>
-                <span class="ep-chip">POST /login</span>
-                <span class="ep-chip">POST /refresh</span>
-                <span class="ep-chip">POST /revoke</span>
-                <span class="ep-chip">GET /profile</span>
+              <div class="card-desc">Identity management with refresh token rotation, asymmetric RSA signing, BCrypt factor 12, and IP-based rate limiting (5 req/min).</div>
+              <div class="ep-row">
+                <span class="ep">POST /register</span><span class="ep">POST /login</span>
+                <span class="ep">POST /refresh</span><span class="ep">POST /revoke</span><span class="ep">GET /profile</span>
               </div>
             </div>
 
             <div class="svc-card" onclick="loadService('orders')"
-              style="--svc-color:#60a5fa; --svc-bg:rgba(96,165,250,.1); --svc-border:rgba(96,165,250,.2); --svc-gradient:linear-gradient(90deg,#60a5fa,#38bdf8)">
-              <div class="card-head">
-                <div class="card-icon" style="--svc-bg:rgba(96,165,250,.1); --svc-border:rgba(96,165,250,.2)">📋</div>
-                <div class="card-meta">
-                  <div class="card-name">Orders Service</div>
-                  <div class="card-port">:5001 · CQRS · MediatR · MassTransit</div>
-                </div>
+              style="--c:#60a5fa; --bg-c:rgba(96,165,250,.1); --bd-c:rgba(96,165,250,.2); --grad:linear-gradient(90deg,#60a5fa,#38bdf8)">
+              <div class="card-hd">
+                <div class="card-ico" style="--bg-c:rgba(96,165,250,.1); --bd-c:rgba(96,165,250,.2)">📋</div>
+                <div><div class="card-nm">Orders Service</div><div class="card-pt">:5001 · CQRS · gRPC · MassTransit</div></div>
               </div>
-              <div class="card-desc">Order lifecycle management. Validates stock via gRPC, triggers async payment flow via RabbitMQ events.</div>
-              <div class="card-endpoints">
-                <span class="ep-chip">POST /orders</span>
-                <span class="ep-chip">GET /orders/{id}</span>
-                <span class="ep-chip">GET /orders/customer</span>
-                <span class="ep-chip">DELETE /orders/{id}</span>
+              <div class="card-desc">Full order lifecycle. Checks stock via gRPC, publishes OrderCreated to RabbitMQ, listens for PaymentProcessed to confirm or cancel.</div>
+              <div class="ep-row">
+                <span class="ep">POST /orders</span><span class="ep">GET /orders/{id}</span>
+                <span class="ep">GET /orders/customer</span><span class="ep">DELETE /orders/{id}</span>
               </div>
             </div>
 
             <div class="svc-card" onclick="loadService('products')"
-              style="--svc-color:#34d399; --svc-bg:rgba(52,211,153,.1); --svc-border:rgba(52,211,153,.2); --svc-gradient:linear-gradient(90deg,#34d399,#4ade80)">
-              <div class="card-head">
-                <div class="card-icon" style="--svc-bg:rgba(52,211,153,.1); --svc-border:rgba(52,211,153,.2)">📦</div>
-                <div class="card-meta">
-                  <div class="card-name">Products Service</div>
-                  <div class="card-port">:5002 · gRPC · Seeded catalog</div>
-                </div>
+              style="--c:#34d399; --bg-c:rgba(52,211,153,.1); --bd-c:rgba(52,211,153,.2); --grad:linear-gradient(90deg,#34d399,#4ade80)">
+              <div class="card-hd">
+                <div class="card-ico" style="--bg-c:rgba(52,211,153,.1); --bd-c:rgba(52,211,153,.2)">📦</div>
+                <div><div class="card-nm">Products Service</div><div class="card-pt">:5002 · gRPC server · Seeded catalog</div></div>
               </div>
-              <div class="card-desc">Product catalog with 10 seeded items. Public read access, Admin-only writes. Exposes a gRPC endpoint for stock verification.</div>
-              <div class="card-endpoints">
-                <span class="ep-chip">GET /products</span>
-                <span class="ep-chip">GET /products/{id}</span>
-                <span class="ep-chip">POST /products</span>
-                <span class="ep-chip">PATCH /stock</span>
+              <div class="card-desc">Product catalog with 10 seeded items across 3 categories. Public read, Admin-only writes. Exposes gRPC for stock verification by Orders.</div>
+              <div class="ep-row">
+                <span class="ep">GET /products</span><span class="ep">GET /products/{id}</span>
+                <span class="ep">POST /products</span><span class="ep">PATCH /stock</span><span class="ep">DELETE /{id}</span>
               </div>
             </div>
 
             <div class="svc-card" onclick="loadService('payments')"
-              style="--svc-color:#fbbf24; --svc-bg:rgba(251,191,36,.1); --svc-border:rgba(251,191,36,.2); --svc-gradient:linear-gradient(90deg,#fbbf24,#fb923c)">
-              <div class="card-head">
-                <div class="card-icon" style="--svc-bg:rgba(251,191,36,.1); --svc-border:rgba(251,191,36,.2)">💳</div>
-                <div class="card-meta">
-                  <div class="card-name">Payments Service</div>
-                  <div class="card-port">:5003 · RabbitMQ consumer</div>
-                </div>
+              style="--c:#fbbf24; --bg-c:rgba(251,191,36,.1); --bd-c:rgba(251,191,36,.2); --grad:linear-gradient(90deg,#fbbf24,#fb923c)">
+              <div class="card-hd">
+                <div class="card-ico" style="--bg-c:rgba(251,191,36,.1); --bd-c:rgba(251,191,36,.2)">💳</div>
+                <div><div class="card-nm">Payments Service</div><div class="card-pt">:5003 · RabbitMQ consumer</div></div>
               </div>
-              <div class="card-desc">Processes payments triggered by OrderCreated events. Publishes PaymentProcessed events consumed by Orders to confirm or cancel.</div>
-              <div class="card-endpoints">
-                <span class="ep-chip">POST /payments</span>
-                <span class="ep-chip">GET /payments/{orderId}</span>
+              <div class="card-desc">Processes payments triggered by OrderCreated events. Publishes PaymentProcessed back to RabbitMQ — Orders listens and confirms or cancels.</div>
+              <div class="ep-row">
+                <span class="ep">POST /payments</span><span class="ep">GET /payments/{orderId}</span>
               </div>
             </div>
 
@@ -611,52 +496,92 @@
         </div>
       </div><!-- /welcome -->
 
-      <!-- LOADING STATE -->
-      <div id="loading-state" class="loading-state hidden">
-        <div class="spinner"></div>
-        <div class="loading-text">Loading API documentation…</div>
+      <!-- ── SERVICE VIEW ── -->
+      <div id="svc-view" class="hidden">
+        <div class="svc-overview" id="svc-overview"></div>
+        <div class="loading-wrap hidden" id="loading">
+          <div class="spinner"></div>
+          <div class="spin-txt">Loading API documentation…</div>
+        </div>
+        <div class="swagger-section hidden" id="swagger-auth"></div>
+        <div class="swagger-section hidden" id="swagger-orders"></div>
+        <div class="swagger-section hidden" id="swagger-products"></div>
+        <div class="swagger-section hidden" id="swagger-payments"></div>
       </div>
 
-      <!-- SWAGGER CONTAINERS -->
-      <div class="swagger-wrap hidden" id="swagger-auth"></div>
-      <div class="swagger-wrap hidden" id="swagger-orders"></div>
-      <div class="swagger-wrap hidden" id="swagger-products"></div>
-      <div class="swagger-wrap hidden" id="swagger-payments"></div>
-
-    </div><!-- /content -->
+    </div><!-- /scroll -->
   </main>
 </div><!-- /shell -->
 
 <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
 <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-standalone-preset.js"></script>
 <script>
-const SERVICES = {
+/* ── Service metadata ── */
+const SVC = {
   auth: {
-    label: 'Auth Service', icon: '🔐', desc: 'JWT RS256 · BCrypt 12 · Rate Limited',
-    color: '#a78bfa', badgeColor: 'rgba(167,139,250,.15)', badgeText: '#a78bfa',
+    label: 'Auth Service', icon: '🔐',
+    color: '#a78bfa', bgc: 'rgba(167,139,250,.12)', bdc: 'rgba(167,139,250,.25)',
     base: '/docs/auth', path: '/api/auth',
+    desc: 'Identity & access management with RS256 asymmetric JWT signing, BCrypt factor 12 password hashing, refresh token rotation, and IP-based rate limiting.',
+    stats: [{ v: 'RS256', l: 'JWT Algorithm' }, { v: 'BCrypt 12', l: 'Password Hash' }, { v: '5 req/min', l: 'Rate Limit' }],
+    tags: ['JWT RS256', 'BCrypt 12', 'Refresh Tokens', 'Rate Limiting', 'JWKS Endpoint'],
+    endpoints: [
+      { m:'POST', p:'/api/auth/register',     n:'Create new account',          auth:false },
+      { m:'POST', p:'/api/auth/login',         n:'Authenticate & get tokens',   auth:false },
+      { m:'POST', p:'/api/auth/refresh',       n:'Rotate refresh token',        auth:false },
+      { m:'POST', p:'/api/auth/revoke',        n:'Revoke refresh token',        auth:true  },
+      { m:'GET',  p:'/api/auth/profile',       n:'Get current user profile',    auth:true  },
+      { m:'GET',  p:'/.well-known/jwks.json',  n:'Public key set (RS256)',      auth:false },
+    ],
   },
   orders: {
-    label: 'Orders Service', icon: '📋', desc: 'CQRS · MediatR · MassTransit',
-    color: '#60a5fa', badgeColor: 'rgba(96,165,250,.15)', badgeText: '#60a5fa',
+    label: 'Orders Service', icon: '📋',
+    color: '#60a5fa', bgc: 'rgba(96,165,250,.12)', bdc: 'rgba(96,165,250,.25)',
     base: '/docs/orders', path: '/api/orders',
+    desc: 'Full order lifecycle management. Validates product stock in real-time via gRPC, publishes OrderCreated events to RabbitMQ, and listens for PaymentProcessed to confirm or cancel.',
+    stats: [{ v: 'gRPC', l: 'Stock Check' }, { v: 'RabbitMQ', l: 'Messaging' }, { v: 'CQRS', l: 'Pattern' }],
+    tags: ['Requires JWT', 'CQRS + MediatR', 'gRPC client', 'MassTransit', 'Domain Events'],
+    endpoints: [
+      { m:'POST',   p:'/api/orders',              n:'Create a new order',         auth:true  },
+      { m:'GET',    p:'/api/orders/{id}',          n:'Get order by ID',            auth:true  },
+      { m:'GET',    p:'/api/orders/customer/{id}', n:'Get orders by customer',     auth:true  },
+      { m:'DELETE', p:'/api/orders/{id}',          n:'Cancel an order',            auth:true  },
+    ],
   },
   products: {
-    label: 'Products Service', icon: '📦', desc: 'gRPC · Seeded 10 products',
-    color: '#34d399', badgeColor: 'rgba(52,211,153,.15)', badgeText: '#34d399',
+    label: 'Products Service', icon: '📦',
+    color: '#34d399', bgc: 'rgba(52,211,153,.12)', bdc: 'rgba(52,211,153,.25)',
     base: '/docs/products', path: '/api/products',
+    desc: '10 pre-seeded products across Electronics, Sports, and Home categories. GET endpoints are public. Create, update stock, and delete require Admin role. Exposes a gRPC server for internal stock checks.',
+    stats: [{ v: '10', l: 'Seeded Products' }, { v: 'gRPC', l: 'Server Exposed' }, { v: '3', l: 'Categories' }],
+    tags: ['Public Read', 'Admin Write', 'gRPC Server', 'Seeded Data', 'CQRS'],
+    endpoints: [
+      { m:'GET',    p:'/api/products',             n:'List all products (public)',      auth:false },
+      { m:'GET',    p:'/api/products/{id}',         n:'Get product by ID (public)',      auth:false },
+      { m:'POST',   p:'/api/products',              n:'Create product (Admin only)',     auth:true  },
+      { m:'PATCH',  p:'/api/products/{id}/stock',   n:'Update stock (Admin only)',       auth:true  },
+      { m:'DELETE', p:'/api/products/{id}',         n:'Deactivate product (Admin only)', auth:true  },
+    ],
   },
   payments: {
-    label: 'Payments Service', icon: '💳', desc: 'RabbitMQ consumer · MassTransit',
-    color: '#fbbf24', badgeColor: 'rgba(251,191,36,.15)', badgeText: '#fbbf24',
+    label: 'Payments Service', icon: '💳',
+    color: '#fbbf24', bgc: 'rgba(251,191,36,.12)', bdc: 'rgba(251,191,36,.25)',
     base: '/docs/payments', path: '/api/payments',
+    desc: 'Event-driven payment processing. Consumes OrderCreated from RabbitMQ, processes payment, and publishes PaymentProcessed. Orders service listens and transitions order state accordingly.',
+    stats: [{ v: 'Consumer', l: 'RabbitMQ Role' }, { v: 'Async', l: 'Processing' }, { v: 'Events', l: 'Driven' }],
+    tags: ['RabbitMQ Consumer', 'MassTransit', 'Event-Driven', 'CQRS'],
+    endpoints: [
+      { m:'POST', p:'/api/payments',             n:'Manually process a payment', auth:false },
+      { m:'GET',  p:'/api/payments/{orderId}',   n:'Query payment by order ID',  auth:false },
+    ],
   },
 };
 
 const uiInstances = {};
-let activeService = null;
+let activeSvc = null;
+let swaggerVisible = {};
 
-/* ── Health check ── */
+/* ── Health ── */
 async function checkHealth(svc) {
   const el = document.getElementById(`status-${svc}`);
   try {
@@ -668,84 +593,158 @@ async function checkHealth(svc) {
     el.className = 'svc-pill down';
   }
 }
-function pollHealth() { Object.keys(SERVICES).forEach(checkHealth); }
+function pollHealth() { Object.keys(SVC).forEach(checkHealth); }
 pollHealth();
 setInterval(pollHealth, 15000);
 
 /* ── Token ── */
 function applyToken() {
-  const raw = document.getElementById('jwt-input').value.trim();
+  const raw = (document.getElementById('jwt-input').value || '').trim();
   if (!raw) { showToast('Paste a token first', '#ef4444'); return; }
-  document.getElementById('jwt-status').textContent = '✓ active';
-  document.getElementById('jwt-status').style.color = '#34d399';
+  const state = document.getElementById('jwt-state');
+  state.textContent = '✓ active';
+  state.style.color = '#34d399';
   Object.values(uiInstances).forEach(ui => ui.preauthorizeApiKey('BearerAuth', raw));
   showToast('Token applied to all services ✓', '#34d399');
 }
 function clearToken() {
   document.getElementById('jwt-input').value = '';
-  document.getElementById('jwt-status').textContent = 'not set';
-  document.getElementById('jwt-status').style.color = '';
+  const state = document.getElementById('jwt-state');
+  state.textContent = 'not set';
+  state.style.color = '';
+}
+
+/* ── Go home ── */
+function goHome() {
+  if (activeSvc) {
+    document.getElementById(`btn-${activeSvc}`).classList.remove('active');
+    activeSvc = null;
+  }
+  document.getElementById('welcome').classList.remove('hidden');
+  document.getElementById('svc-view').classList.add('hidden');
+  document.getElementById('tb-home-state').style.display = 'flex';
+  document.getElementById('tb-svc-state').classList.add('hidden');
+  document.getElementById('scroll').scrollTop = 0;
 }
 
 /* ── Load service ── */
 function loadService(svc) {
-  const meta = SERVICES[svc];
+  const meta = SVC[svc];
 
-  // hide welcome
-  document.getElementById('welcome').classList.add('hidden');
-  document.getElementById('loading-state').classList.add('hidden');
+  // topbar
+  document.getElementById('tb-home-state').style.display = 'none';
+  const tbSvc = document.getElementById('tb-svc-state');
+  tbSvc.classList.remove('hidden');
+  tbSvc.style.display = 'flex';
 
-  // show service bar
-  const bar = document.getElementById('service-bar');
-  bar.classList.remove('hidden');
-  bar.style.borderBottom = `1px solid ${meta.color}22`;
-  document.getElementById('bar-icon').textContent = meta.icon;
-  document.getElementById('bar-icon').style.cssText = `width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;background:${meta.color}18;border:1px solid ${meta.color}33`;
-  document.getElementById('bar-name').textContent = meta.label;
-  document.getElementById('bar-desc').textContent = meta.desc;
-  document.getElementById('bar-path').textContent = meta.path;
-  const badge = document.getElementById('bar-badge');
+  const tbIco = document.getElementById('tb-ico');
+  tbIco.textContent = meta.icon;
+  tbIco.style.cssText = `width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;background:${meta.bgc};border:1px solid ${meta.bdc}`;
+  document.getElementById('tb-name').textContent = meta.label;
+  document.getElementById('tb-desc').textContent = meta.desc.substring(0, 60) + '…';
+  document.getElementById('tb-path').textContent = meta.path;
+  const badge = document.getElementById('tb-badge');
   badge.textContent = 'OpenAPI 3.0';
-  badge.style.cssText = `font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.4px;text-transform:uppercase;background:${meta.badgeColor};color:${meta.badgeText}`;
+  badge.style.cssText = `font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;background:${meta.bgc};color:${meta.color};border:1px solid ${meta.bdc}`;
 
-  // deactivate previous
-  if (activeService && activeService !== svc) {
-    document.getElementById(`btn-${activeService}`).classList.remove('active');
-    document.getElementById(`swagger-${activeService}`).classList.add('hidden');
+  // sidebar active
+  if (activeSvc && activeSvc !== svc) {
+    document.getElementById(`btn-${activeSvc}`).classList.remove('active');
   }
-
-  // activate new
   document.getElementById(`btn-${svc}`).classList.add('active');
-  activeService = svc;
+  activeSvc = svc;
 
-  if (uiInstances[svc]) {
-    document.getElementById(`swagger-${svc}`).classList.remove('hidden');
-    return;
-  }
+  // show svc-view, hide welcome
+  document.getElementById('welcome').classList.add('hidden');
+  document.getElementById('svc-view').classList.remove('hidden');
 
-  // show spinner while loading
-  document.getElementById('loading-state').classList.remove('hidden');
+  // render overview
+  renderOverview(svc, meta);
 
-  uiInstances[svc] = SwaggerUIBundle({
-    url: `${meta.base}/swagger.json`,
-    dom_id: `#swagger-${svc}`,
-    deepLinking: true,
-    persistAuthorization: true,
-    presets:  [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
-    plugins:  [SwaggerUIBundle.plugins.DownloadUrl],
-    layout:   'StandaloneLayout',
-    onComplete: () => {
-      document.getElementById('loading-state').classList.add('hidden');
-      document.getElementById(`swagger-${svc}`).classList.remove('hidden');
-      const token = document.getElementById('jwt-input').value.trim();
-      if (token) uiInstances[svc].preauthorizeApiKey('BearerAuth', token);
-    },
-    requestInterceptor: req => {
-      const token = document.getElementById('jwt-input').value.trim();
-      if (token) req.headers['Authorization'] = `Bearer ${token}`;
-      return req;
-    },
+  document.getElementById('scroll').scrollTop = 0;
+}
+
+function renderOverview(svc, meta) {
+  const methodClass = m => ({ GET:'method-get', POST:'method-post', DELETE:'method-delete', PATCH:'method-patch' }[m] || '');
+
+  const statsHtml = meta.stats.map(s =>
+    `<div class="ov-stat"><div class="ov-stat-val">${s.v}</div><div class="ov-stat-lbl">${s.l}</div></div>`
+  ).join('');
+
+  const tagsHtml = meta.tags.map((t, i) =>
+    `<span class="ov-tag${i < 2 ? ' highlight' : ''}" style="${i < 2 ? `--c:${meta.color};--bg-c:${meta.bgc};--bd-c:${meta.bdc}` : ''}">${t}</span>`
+  ).join('');
+
+  const epsHtml = meta.endpoints.map(ep =>
+    `<div class="ep-item">
+      <span class="ep-method ${methodClass(ep.m)}">${ep.m}</span>
+      <span class="ep-path">${ep.p}</span>
+      <span class="ep-note">${ep.n}</span>
+      ${ep.auth ? '<span class="ep-auth">🔒 JWT</span>' : ''}
+    </div>`
+  ).join('');
+
+  document.getElementById('svc-overview').innerHTML = `
+    <div class="ov-row">
+      <div class="ov-icon" style="background:${meta.bgc};border:1px solid ${meta.bdc}">${meta.icon}</div>
+      <div class="ov-head">
+        <div class="ov-name" style="color:${meta.color}">${meta.label}</div>
+        <div class="ov-desc">${meta.desc}</div>
+        <div class="ov-tags">${tagsHtml}</div>
+      </div>
+    </div>
+    <div class="ov-grid">${statsHtml}</div>
+    <div class="ov-endpoints">
+      <div class="ov-ep-title">Endpoints</div>
+      <div class="ep-list">${epsHtml}</div>
+    </div>
+    <button class="explore-btn" style="background:linear-gradient(135deg,${meta.color},${meta.color}bb)" onclick="showSwagger('${svc}')">
+      Explore in Swagger UI →
+    </button>
+  `;
+
+  // hide swagger if switching services
+  ['auth','orders','products','payments'].forEach(s => {
+    document.getElementById(`swagger-${s}`).classList.add('hidden');
   });
+  document.getElementById('loading').classList.add('hidden');
+
+  if (swaggerVisible[svc]) {
+    document.getElementById(`swagger-${svc}`).classList.remove('hidden');
+  }
+}
+
+function showSwagger(svc) {
+  const meta = SVC[svc];
+  if (!uiInstances[svc]) {
+    document.getElementById('loading').classList.remove('hidden');
+    uiInstances[svc] = SwaggerUIBundle({
+      url: `${meta.base}/swagger.json`,
+      dom_id: `#swagger-${svc}`,
+      deepLinking: true,
+      persistAuthorization: true,
+      presets:  [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+      plugins:  [SwaggerUIBundle.plugins.DownloadUrl],
+      layout:   'StandaloneLayout',
+      onComplete: () => {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById(`swagger-${svc}`).classList.remove('hidden');
+        swaggerVisible[svc] = true;
+        const token = (document.getElementById('jwt-input').value || '').trim();
+        if (token) uiInstances[svc].preauthorizeApiKey('BearerAuth', token);
+      },
+      requestInterceptor: req => {
+        const token = (document.getElementById('jwt-input').value || '').trim();
+        if (token) req.headers['Authorization'] = `Bearer ${token}`;
+        return req;
+      },
+    });
+  } else {
+    document.getElementById(`swagger-${svc}`).classList.remove('hidden');
+    swaggerVisible[svc] = true;
+  }
+  // scroll to swagger
+  setTimeout(() => document.getElementById(`swagger-${svc}`).scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
 /* ── Toast ── */
@@ -755,19 +754,12 @@ function showToast(msg, color = '#4f46e5') {
   t.textContent = msg;
   t.style.background = color;
   document.body.appendChild(t);
-  setTimeout(() => {
-    t.style.transition = 'opacity .3s';
-    t.style.opacity = '0';
-    setTimeout(() => t.remove(), 300);
-  }, 2500);
+  setTimeout(() => { t.style.transition = 'opacity .3s'; t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
 }
 
 /* ── Token from URL hash ── */
 const hp = new URLSearchParams(location.hash.slice(1));
-if (hp.get('token')) {
-  document.getElementById('jwt-input').value = hp.get('token');
-  applyToken();
-}
+if (hp.get('token')) { document.getElementById('jwt-input').value = hp.get('token'); applyToken(); }
 </script>
 </body>
 </html>
