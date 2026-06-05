@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MicroservicesSolution — API Portal</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f172a;
+      --surface:   #1e293b;
+      --border:    #334155;
+      --text:      #e2e8f0;
+      --muted:     #94a3b8;
+      --auth:      #8b5cf6;
+      --orders:    #3b82f6;
+      --products:  #10b981;
+      --payments:  #f59e0b;
+      --sidebar-w: 280px;
+    }
+
+    html, body { height: 100%; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); }
+
+    /* ── LAYOUT ── */
+    .layout { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+    .brand-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
+    .brand-sub  { font-size: 11px; color: var(--muted); margin-left: 46px; margin-bottom: 18px; }
+
+    .token-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
+    .token-wrap  { position: relative; }
+    .token-input {
+      width: 100%; padding: 8px 36px 8px 10px;
+      background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+      color: var(--text); font-size: 12px; font-family: 'Courier New', monospace;
+      outline: none; transition: border-color .2s;
+    }
+    .token-input:focus    { border-color: #6366f1; }
+    .token-input::placeholder { color: #475569; }
+    .token-copy {
+      position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: var(--muted);
+      font-size: 14px; padding: 2px 4px; border-radius: 4px; transition: color .2s;
+    }
+    .token-copy:hover { color: var(--text); }
+    .token-apply {
+      margin-top: 8px; width: 100%; padding: 7px;
+      background: #6366f1; border: none; border-radius: 6px;
+      color: #fff; font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: background .2s;
+    }
+    .token-apply:hover { background: #4f46e5; }
+
+    /* ── NAV SECTION ── */
+    .nav-section { padding: 16px 12px 8px; }
+    .nav-title { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding: 0 8px; margin-bottom: 8px; }
+
+    .service-btn {
+      width: 100%; display: flex; align-items: center; gap: 12px;
+      padding: 10px 10px; border-radius: 8px; border: none; background: none;
+      color: var(--text); cursor: pointer; text-align: left;
+      transition: background .15s; margin-bottom: 2px;
+    }
+    .service-btn:hover  { background: rgba(255,255,255,.05); }
+    .service-btn.active { background: rgba(255,255,255,.08); }
+
+    .svc-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+      position: relative;
+    }
+    .svc-dot::after {
+      content: ''; position: absolute; inset: -3px; border-radius: 50%;
+      opacity: 0;
+    }
+    .service-btn.active .svc-dot::after { opacity: .2; background: currentColor; }
+
+    .svc-info { flex: 1; min-width: 0; }
+    .svc-name { font-size: 13px; font-weight: 600; }
+    .svc-desc { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .svc-status {
+      font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 20px;
+      background: rgba(16,185,129,.15); color: #10b981;
+    }
+    .svc-status.loading { background: rgba(148,163,184,.1); color: var(--muted); }
+    .svc-status.down    { background: rgba(239,68,68,.15); color: #ef4444; }
+
+    /* ── SIDEBAR FOOTER ── */
+    .sidebar-footer {
+      margin-top: auto; padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      font-size: 11px; color: var(--muted);
+    }
+    .sidebar-footer a { color: #6366f1; text-decoration: none; }
+    .sidebar-footer a:hover { text-decoration: underline; }
+
+    /* ── MAIN ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .topbar {
+      padding: 14px 28px; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .topbar-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .topbar-title { font-size: 16px; font-weight: 700; }
+    .topbar-path  { font-size: 12px; color: var(--muted); font-family: monospace; background: var(--bg); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border); }
+    .topbar-spacer { flex: 1; }
+    .topbar-badge {
+      font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 600;
+      background: rgba(99,102,241,.15); color: #818cf8;
+    }
+
+    .swagger-wrap {
+      flex: 1; overflow-y: auto;
+      background: #fff;
+    }
+    .swagger-wrap.hidden { display: none; }
+
+    /* ── WELCOME SCREEN ── */
+    .welcome {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 16px; padding: 40px;
+    }
+    .welcome-icon { font-size: 56px; }
+    .welcome h2  { font-size: 22px; font-weight: 700; }
+    .welcome p   { color: var(--muted); font-size: 14px; text-align: center; max-width: 420px; line-height: 1.6; }
+
+    .service-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; width: 100%; max-width: 560px; margin-top: 8px;
+    }
+    .service-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px 18px; cursor: pointer; transition: border-color .2s, transform .1s;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .service-card:hover { border-color: #6366f1; transform: translateY(-1px); }
+    .service-card-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+    .service-card-name { font-size: 14px; font-weight: 600; }
+    .service-card-desc { font-size: 11px; color: var(--muted); }
+
+    /* ── SWAGGER OVERRIDES ── */
+    .swagger-wrap .swagger-ui .topbar { display: none; }
+    .swagger-wrap .swagger-ui .information-container { padding: 20px 30px 0; }
+    .swagger-wrap .swagger-ui { font-family: 'Inter', system-ui, sans-serif !important; }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <span class="brand-name">MicroservicesSolution</span>
+      </div>
+      <div class="brand-sub">API Portal · v1.0</div>
+
+      <div class="token-label">JWT Bearer Token</div>
+      <div class="token-wrap">
+        <input id="jwt-input" class="token-input" type="text" placeholder="Paste your token here…" />
+        <button class="token-copy" title="Clear" onclick="clearToken()">✕</button>
+      </div>
+      <button class="token-apply" onclick="applyToken()">Apply to all services</button>
+    </div>
+
+    <nav class="nav-section">
+      <div class="nav-title">Services</div>
+
+      <button class="service-btn" id="btn-auth" onclick="loadService('auth')" style="--c: var(--auth)">
+        <span class="svc-dot" style="background: var(--auth)"></span>
+        <span class="svc-info">
+          <div class="svc-name">Auth Service</div>
+          <div class="svc-desc">Register · Login · JWT · Tokens</div>
+        </span>
+        <span class="svc-status loading" id="status-auth">…</span>
+      </button>
+
+      <button class="service-btn" id="btn-orders" onclick="loadService('orders')" style="--c: var(--orders)">
+        <span class="svc-dot" style="background: var(--orders)"></span>
+        <span class="svc-info">
+          <div class="svc-name">Orders Service</div>
+          <div class="svc-desc">Create · Cancel · Track orders</div>
+        </span>
+        <span class="svc-status loading" id="status-orders">…</span>
+      </button>
+
+      <button class="service-btn" id="btn-products" onclick="loadService('products')" style="--c: var(--products)">
+        <span class="svc-dot" style="background: var(--products)"></span>
+        <span class="svc-info">
+          <div class="svc-name">Products Service</div>
+          <div class="svc-desc">Catalog · Stock · gRPC</div>
+        </span>
+        <span class="svc-status loading" id="status-products">…</span>
+      </button>
+
+      <button class="service-btn" id="btn-payments" onclick="loadService('payments')" style="--c: var(--payments)">
+        <span class="svc-dot" style="background: var(--payments)"></span>
+        <span class="svc-info">
+          <div class="svc-name">Payments Service</div>
+          <div class="svc-desc">Process · Query payment status</div>
+        </span>
+        <span class="svc-status loading" id="status-payments">…</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div style="margin-bottom:4px">Built with .NET 8 · Clean Architecture · CQRS</div>
+      <div>RabbitMQ · gRPC · JWT RS256 · EF Core</div>
+      <div style="margin-top:8px">
+        <a href="https://github.com/plowtty/Microservicios-" target="_blank">GitHub →</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main" id="main">
+
+    <!-- TOPBAR (hidden until service selected) -->
+    <div class="topbar" id="topbar" style="display:none">
+      <span class="topbar-dot" id="topbar-dot"></span>
+      <span class="topbar-title" id="topbar-title"></span>
+      <span class="topbar-path" id="topbar-path"></span>
+      <span class="topbar-spacer"></span>
+      <span class="topbar-badge">OpenAPI 3.0</span>
+    </div>
+
+    <!-- WELCOME -->
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">🚀</div>
+      <h2>API Portal</h2>
+      <p>Select a microservice from the sidebar to explore its REST API, try out endpoints, and authenticate with JWT tokens.</p>
+      <div class="service-grid">
+        <div class="service-card" onclick="loadService('auth')">
+          <span class="service-card-dot" style="background: var(--auth)"></span>
+          <div><div class="service-card-name">Auth</div><div class="service-card-desc">JWT · RS256 · BCrypt</div></div>
+        </div>
+        <div class="service-card" onclick="loadService('orders')">
+          <span class="service-card-dot" style="background: var(--orders)"></span>
+          <div><div class="service-card-name">Orders</div><div class="service-card-desc">CQRS · MediatR · Events</div></div>
+        </div>
+        <div class="service-card" onclick="loadService('products')">
+          <span class="service-card-dot" style="background: var(--products)"></span>
+          <div><div class="service-card-name">Products</div><div class="service-card-desc">Catalog · gRPC · Seeded</div></div>
+        </div>
+        <div class="service-card" onclick="loadService('payments')">
+          <span class="service-card-dot" style="background: var(--payments)"></span>
+          <div><div class="service-card-name">Payments</div><div class="service-card-desc">RabbitMQ · MassTransit</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SWAGGER CONTAINERS (one per service) -->
+    <div class="swagger-wrap hidden" id="swagger-auth"></div>
+    <div class="swagger-wrap hidden" id="swagger-orders"></div>
+    <div class="swagger-wrap hidden" id="swagger-products"></div>
+    <div class="swagger-wrap hidden" id="swagger-payments"></div>
+
+  </main>
+</div>
+
+<script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
+<script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-standalone-preset.js"></script>
+<script>
+  const SERVICES = {
+    auth:     { label: 'Auth Service',     color: '#8b5cf6', base: '/docs/auth',     desc: 'POST /api/auth' },
+    orders:   { label: 'Orders Service',   color: '#3b82f6', base: '/docs/orders',   desc: 'GET  /api/orders' },
+    products: { label: 'Products Service', color: '#10b981', base: '/docs/products', desc: 'GET  /api/products' },
+    payments: { label: 'Payments Service', color: '#f59e0b', base: '/docs/payments', desc: 'GET  /api/payments' },
+  };
+
+  const uiInstances  = {};
+  let   currentToken = '';
+  let   activeService = null;
+
+  /* ── Health polling ── */
+  async function checkHealth(svc) {
+    const el = document.getElementById(`status-${svc}`);
+    try {
+      const r = await fetch(`/health/${svc}`, { signal: AbortSignal.timeout(4000) });
+      el.textContent = r.ok ? 'online' : 'degraded';
+      el.className   = 'svc-status' + (r.ok ? '' : ' down');
+    } catch {
+      el.textContent = 'offline';
+      el.className   = 'svc-status down';
+    }
+  }
+
+  function pollHealth() {
+    Object.keys(SERVICES).forEach(checkHealth);
+  }
+  pollHealth();
+  setInterval(pollHealth, 15000);
+
+  /* ── Token ── */
+  function clearToken() {
+    document.getElementById('jwt-input').value = '';
+    currentToken = '';
+  }
+
+  function applyToken() {
+    currentToken = document.getElementById('jwt-input').value.trim();
+    // re-authorise any already-loaded UI
+    Object.entries(uiInstances).forEach(([, ui]) => {
+      if (currentToken) {
+        ui.preauthorizeApiKey('BearerAuth', currentToken);
+      }
+    });
+    if (currentToken) {
+      showToast('Token applied to all services ✓');
+    }
+  }
+
+  /* ── Load / switch service ── */
+  function loadService(svc) {
+    const meta = SERVICES[svc];
+
+    // hide welcome, show topbar
+    document.getElementById('welcome').style.display = 'none';
+    document.getElementById('topbar').style.display  = 'flex';
+    document.getElementById('topbar-dot').style.background = meta.color;
+    document.getElementById('topbar-title').textContent    = meta.label;
+    document.getElementById('topbar-path').textContent     = meta.desc;
+
+    // toggle active sidebar button
+    if (activeService) {
+      document.getElementById(`btn-${activeService}`).classList.remove('active');
+      document.getElementById(`swagger-${activeService}`).classList.add('hidden');
+    }
+    document.getElementById(`btn-${svc}`).classList.add('active');
+    const container = document.getElementById(`swagger-${svc}`);
+    container.classList.remove('hidden');
+    activeService = svc;
+
+    // init Swagger UI only once per service
+    if (!uiInstances[svc]) {
+      uiInstances[svc] = SwaggerUIBundle({
+        url:    `${meta.base}/swagger.json`,
+        dom_id: `#swagger-${svc}`,
+        deepLinking: true,
+        persistAuthorization: true,
+        presets:  [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        plugins:  [SwaggerUIBundle.plugins.DownloadUrl],
+        layout:   'StandaloneLayout',
+        requestInterceptor: (req) => {
+          const token = document.getElementById('jwt-input').value.trim() || currentToken;
+          if (token) req.headers['Authorization'] = `Bearer ${token}`;
+          return req;
+        },
+      });
+      if (currentToken) {
+        setTimeout(() => uiInstances[svc].preauthorizeApiKey('BearerAuth', currentToken), 800);
+      }
+    }
+  }
+
+  /* ── Toast ── */
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.textContent = msg;
+    Object.assign(t.style, {
+      position: 'fixed', bottom: '24px', right: '24px',
+      background: '#22c55e', color: '#fff', padding: '10px 18px',
+      borderRadius: '8px', fontSize: '13px', fontWeight: '600',
+      boxShadow: '0 4px 20px rgba(0,0,0,.3)', zIndex: 9999,
+      animation: 'none', transition: 'opacity .3s',
+    });
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, 2500);
+  }
+
+  /* Auto-populate token from URL hash e.g. /#token=eyJ... */
+  const hash = new URLSearchParams(location.hash.slice(1));
+  if (hash.get('token')) {
+    document.getElementById('jwt-input').value = hash.get('token');
+    currentToken = hash.get('token');
+  }
+</script>
+</body>
+</html>
