@@ -31,7 +31,8 @@ public static class DependencyInjection
                 var user = configuration["RabbitMQ:Username"] ?? "guest";
                 var pass = configuration["RabbitMQ:Password"] ?? "guest";
 
-                cfg.Host(host, "/", h =>
+                var vhost = configuration["RabbitMQ:VirtualHost"] ?? "/";
+                cfg.Host(host, vhost, h =>
                 {
                     h.Username(user);
                     h.Password(pass);

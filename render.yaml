@@ -1,0 +1,178 @@
+## ─────────────────────────────────────────────────────────────
+##  MicroservicesSolution — Render.com Infrastructure as Code
+##
+##  Pre-requisites before deploying:
+##  1. Create a free RabbitMQ instance at https://cloudamqp.com
+##     (plan: "Little Lemur" — free forever)
+##     You will need: Host, Username, Password, VirtualHost
+##
+##  2. Connect this GitHub repo to Render:
+##     https://dashboard.render.com/new/blueprint
+##
+##  3. After all services are deployed, go to each service's
+##     Environment settings and fill in the sync:false variables
+##     marked with  ← SET THIS  below.
+## ─────────────────────────────────────────────────────────────
+
+databases:
+  - name: auth-db
+    plan: free
+    databaseName: auth_db
+    user: auth_user
+
+  - name: orders-db
+    plan: free
+    databaseName: orders_db
+    user: orders_user
+
+  - name: products-db
+    plan: free
+    databaseName: products_db
+    user: products_user
+
+  - name: payments-db
+    plan: free
+    databaseName: payments_db
+    user: payments_user
+
+services:
+
+  # ── AUTH SERVICE ──────────────────────────────────────────
+  - type: web
+    name: auth-service
+    env: docker
+    plan: free
+    dockerfilePath: src/Services/Auth/Auth.API/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_HTTP_PORTS
+        value: 10000
+      - key: ConnectionStrings__AuthDb
+        fromDatabase:
+          name: auth-db
+          property: connectionString
+      - key: Jwt__Issuer
+        value: auth-service
+      - key: Jwt__Audience
+        value: microservices
+      - key: Jwt__AccessTokenExpiryMinutes
+        value: "15"
+      - key: Jwt__RefreshTokenExpiryDays
+        value: "7"
+
+  # ── PRODUCTS SERVICE ──────────────────────────────────────
+  - type: web
+    name: products-service
+    env: docker
+    plan: free
+    dockerfilePath: src/Services/Products/Products.API/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_HTTP_PORTS
+        value: 10000
+      - key: ConnectionStrings__ProductsDb
+        fromDatabase:
+          name: products-db
+          property: connectionString
+      - key: Auth__Issuer
+        value: auth-service
+      - key: Auth__Audience
+        value: microservices
+      - key: Auth__JwksUri
+        sync: false  # ← SET THIS: https://<your-auth-service>.onrender.com/.well-known/jwks.json
+      - key: RabbitMQ__Host
+        sync: false  # ← SET THIS: from CloudAMQP (e.g. horse.rmq.cloudamqp.com)
+      - key: RabbitMQ__Username
+        sync: false  # ← SET THIS: from CloudAMQP
+      - key: RabbitMQ__Password
+        sync: false  # ← SET THIS: from CloudAMQP
+      - key: RabbitMQ__VirtualHost
+        sync: false  # ← SET THIS: from CloudAMQP (usually same as username)
+
+  # ── ORDERS SERVICE ────────────────────────────────────────
+  - type: web
+    name: orders-service
+    env: docker
+    plan: free
+    dockerfilePath: src/Services/Orders/Orders.API/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_HTTP_PORTS
+        value: 10000
+      - key: ConnectionStrings__OrdersDb
+        fromDatabase:
+          name: orders-db
+          property: connectionString
+      - key: Auth__Issuer
+        value: auth-service
+      - key: Auth__Audience
+        value: microservices
+      - key: Auth__JwksUri
+        sync: false  # ← SET THIS: https://<your-auth-service>.onrender.com/.well-known/jwks.json
+      - key: GrpcClients__Products
+        sync: false  # ← SET THIS: https://<your-products-service>.onrender.com
+      - key: RabbitMQ__Host
+        sync: false  # ← SET THIS: from CloudAMQP
+      - key: RabbitMQ__Username
+        sync: false  # ← SET THIS: from CloudAMQP
+      - key: RabbitMQ__Password
+        sync: false  # ← SET THIS: from CloudAMQP
+      - key: RabbitMQ__VirtualHost
+        sync: false  # ← SET THIS: from CloudAMQP
+
+  # ── PAYMENTS SERVICE ──────────────────────────────────────
+  - type: web
+    name: payments-service
+    env: docker
+    plan: free
+    dockerfilePath: src/Services/Payments/Payments.API/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_HTTP_PORTS
+        value: 10000
+      - key: ConnectionStrings__PaymentsDb
+        fromDatabase:
+          name: payments-db
+          property: connectionString
+      - key: RabbitMQ__Host
+        sync: false  # ← SET THIS: from CloudAMQP
+      - key: RabbitMQ__Username
+        sync: false  # ← SET THIS: from CloudAMQP
+      - key: RabbitMQ__Password
+        sync: false  # ← SET THIS: from CloudAMQP
+      - key: RabbitMQ__VirtualHost
+        sync: false  # ← SET THIS: from CloudAMQP
+
+  # ── API GATEWAY ───────────────────────────────────────────
+  - type: web
+    name: api-gateway
+    env: docker
+    plan: free
+    dockerfilePath: src/ApiGateway/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_HTTP_PORTS
+        value: 10000
+      - key: ReverseProxy__Clusters__auth-cluster__Destinations__auth-service__Address
+        sync: false  # ← SET THIS: https://<your-auth-service>.onrender.com/
+      - key: ReverseProxy__Clusters__orders-cluster__Destinations__orders-service__Address
+        sync: false  # ← SET THIS: https://<your-orders-service>.onrender.com/
+      - key: ReverseProxy__Clusters__products-cluster__Destinations__products-service__Address
+        sync: false  # ← SET THIS: https://<your-products-service>.onrender.com/
+      - key: ReverseProxy__Clusters__payments-cluster__Destinations__payments-service__Address
+        sync: false  # ← SET THIS: https://<your-payments-service>.onrender.com/

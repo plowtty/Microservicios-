@@ -35,7 +35,8 @@ public static class DependencyInjection
             x.AddConsumer<PaymentProcessedConsumer>();
             x.UsingRabbitMq((ctx, cfg) =>
             {
-                cfg.Host(configuration["RabbitMQ:Host"], h =>
+                var vhost = configuration["RabbitMQ:VirtualHost"] ?? "/";
+                cfg.Host(configuration["RabbitMQ:Host"], vhost, h =>
                 {
                     h.Username(configuration["RabbitMQ:Username"]!);
                     h.Password(configuration["RabbitMQ:Password"]!);
