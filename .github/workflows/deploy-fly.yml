@@ -1,0 +1,149 @@
+name: Deploy to Fly.io
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  RABBIT_HOST:  gorilla.lmq.cloudamqp.com
+  RABBIT_USER:  iufhqqrh
+  RABBIT_VHOST: iufhqqrh
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+
+      # ── Create apps (skips if already exist) ──────────────────────
+      - name: Create apps
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          fly apps create ms-auth-service     --org personal 2>/dev/null || true
+          fly apps create ms-orders-service   --org personal 2>/dev/null || true
+          fly apps create ms-products-service --org personal 2>/dev/null || true
+          fly apps create ms-payments-service --org personal 2>/dev/null || true
+          fly apps create ms-api-gateway      --org personal 2>/dev/null || true
+
+      # ── Create Postgres databases (skips if already exist) ─────────
+      - name: Create databases
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          fly postgres create --name ms-auth-db     --region iad --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 1 --yes 2>/dev/null || true
+          fly postgres create --name ms-orders-db   --region iad --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 1 --yes 2>/dev/null || true
+          fly postgres create --name ms-products-db --region iad --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 1 --yes 2>/dev/null || true
+          fly postgres create --name ms-payments-db --region iad --initial-cluster-size 1 --vm-size shared-cpu-1x --volume-size 1 --yes 2>/dev/null || true
+
+      # ── Attach databases (skips if already attached) ───────────────
+      - name: Attach databases
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          fly postgres attach ms-auth-db     --app ms-auth-service     --yes 2>/dev/null || true
+          fly postgres attach ms-orders-db   --app ms-orders-service   --yes 2>/dev/null || true
+          fly postgres attach ms-products-db --app ms-products-service --yes 2>/dev/null || true
+          fly postgres attach ms-payments-db --app ms-payments-service --yes 2>/dev/null || true
+
+      # ── Set secrets ────────────────────────────────────────────────
+      - name: Set Auth secrets
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          fly secrets set --app ms-auth-service \
+            ASPNETCORE_ENVIRONMENT=Production \
+            Jwt__Issuer=auth-service \
+            Jwt__Audience=microservices \
+            Jwt__AccessTokenExpiryMinutes=15 \
+            Jwt__RefreshTokenExpiryDays=7
+
+      - name: Set Products secrets
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          fly secrets set --app ms-products-service \
+            ASPNETCORE_ENVIRONMENT=Production \
+            Auth__Issuer=auth-service \
+            Auth__Audience=microservices \
+            "Auth__JwksUri=http://ms-auth-service.internal:8080/.well-known/jwks.json" \
+            "RabbitMQ__Host=${{ env.RABBIT_HOST }}" \
+            "RabbitMQ__Username=${{ env.RABBIT_USER }}" \
+            "RabbitMQ__Password=${{ secrets.RABBIT_PASSWORD }}" \
+            "RabbitMQ__VirtualHost=${{ env.RABBIT_VHOST }}"
+
+      - name: Set Orders secrets
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          fly secrets set --app ms-orders-service \
+            ASPNETCORE_ENVIRONMENT=Production \
+            Auth__Issuer=auth-service \
+            Auth__Audience=microservices \
+            "Auth__JwksUri=http://ms-auth-service.internal:8080/.well-known/jwks.json" \
+            "GrpcClients__Products=http://ms-products-service.internal:8080" \
+            "RabbitMQ__Host=${{ env.RABBIT_HOST }}" \
+            "RabbitMQ__Username=${{ env.RABBIT_USER }}" \
+            "RabbitMQ__Password=${{ secrets.RABBIT_PASSWORD }}" \
+            "RabbitMQ__VirtualHost=${{ env.RABBIT_VHOST }}"
+
+      - name: Set Payments secrets
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          fly secrets set --app ms-payments-service \
+            ASPNETCORE_ENVIRONMENT=Production \
+            "RabbitMQ__Host=${{ env.RABBIT_HOST }}" \
+            "RabbitMQ__Username=${{ env.RABBIT_USER }}" \
+            "RabbitMQ__Password=${{ secrets.RABBIT_PASSWORD }}" \
+            "RabbitMQ__VirtualHost=${{ env.RABBIT_VHOST }}"
+
+      - name: Set Gateway secrets
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          fly secrets set --app ms-api-gateway \
+            ASPNETCORE_ENVIRONMENT=Production \
+            "ReverseProxy__Clusters__auth-cluster__Destinations__auth-service__Address=http://ms-auth-service.internal:8080/" \
+            "ReverseProxy__Clusters__orders-cluster__Destinations__orders-service__Address=http://ms-orders-service.internal:8080/" \
+            "ReverseProxy__Clusters__products-cluster__Destinations__products-service__Address=http://ms-products-service.internal:8080/" \
+            "ReverseProxy__Clusters__payments-cluster__Destinations__payments-service__Address=http://ms-payments-service.internal:8080/"
+
+      # ── Deploy ─────────────────────────────────────────────────────
+      - name: Deploy Auth
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: fly deploy --config fly/auth.toml --app ms-auth-service --remote-only
+
+      - name: Deploy Products
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: fly deploy --config fly/products.toml --app ms-products-service --remote-only
+
+      - name: Deploy Orders
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: fly deploy --config fly/orders.toml --app ms-orders-service --remote-only
+
+      - name: Deploy Payments
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: fly deploy --config fly/payments.toml --app ms-payments-service --remote-only
+
+      - name: Deploy Gateway
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: fly deploy --config fly/gateway.toml --app ms-api-gateway --remote-only
+
+      # ── Summary ────────────────────────────────────────────────────
+      - name: Print URLs
+        run: |
+          echo "✅ Deploy complete!"
+          echo "🌐 Portal:   https://ms-api-gateway.fly.dev"
+          echo "🔐 Auth:     https://ms-auth-service.fly.dev/swagger"
+          echo "📦 Products: https://ms-products-service.fly.dev/swagger"
+          echo "📋 Orders:   https://ms-orders-service.fly.dev/swagger"
+          echo "💳 Payments: https://ms-payments-service.fly.dev/swagger"
