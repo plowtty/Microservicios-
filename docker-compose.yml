@@ -167,7 +167,7 @@ services:
       context: .
       dockerfile: src/ApiGateway/Dockerfile
     ports:
-      - "5000:8080"
+      - "5010:8080"
     depends_on:
       - orders-service
       - products-service
